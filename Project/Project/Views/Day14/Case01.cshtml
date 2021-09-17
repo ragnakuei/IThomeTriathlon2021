@@ -1,0 +1,81 @@
+﻿@using System.Linq
+@model Project.Models.Day14.ViewModel
+<p>Day14/Case01</p>
+
+@using (Html.BeginForm(FormMethod.Post, htmlAttributes: new { autocomplete = "off" }))
+{
+    <p>
+        @Html.LabelFor(model => model.OrderDate)
+        @Html.EditorFor(m => m.OrderDate)
+    </p>
+    <div>
+        @Html.LabelFor(model => model.Items)
+        <table>
+            <thead>
+            <tr>
+                <th>@Html.LabelFor(m => m.Items.FirstOrDefault().Name)</th>
+                <th>@Html.LabelFor(m => m.Items.FirstOrDefault().Quantity)</th>
+                <th>
+                    <button type="button"
+                            onclick="AddItem()">
+                        新增
+                    </button>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="Items">
+                @for (int i = 0; i < Model?.Items?.Length; i++)
+                {
+                    ViewData["OrderItemIndex"] = i;
+
+                    @Html.Partial("OrderItem", Model?.Items[i], ViewData)
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+}
+
+<p>
+    <a asp-action="Index" asp-controller="Home">回上一層</a>
+</p>
+
+@section Scripts
+{
+    <script>
+
+        window.ItemsCount = @(Model?.Items?.Length ?? 0);
+
+        window.AddItemUrl = '@Url.Action("AddOrderItem")';
+
+        window.AddItem = function () {
+
+            const requestBody = new URLSearchParams();
+            requestBody.append('index', ItemsCount);
+
+            fetch(AddItemUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: requestBody,
+              })
+            .then(response => response.text())
+            .then(data => {
+                $('#Items').append(data);
+                ItemsCount++;
+            })
+        }
+
+        window.DeleteItem = function (e) {
+            const btnDom = e.target;
+
+            const trDom = $(btnDom).parent().parent();
+
+            trDom.remove();
+        }
+    </script>
+}

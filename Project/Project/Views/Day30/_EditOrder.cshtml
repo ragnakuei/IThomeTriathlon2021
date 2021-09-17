@@ -1,0 +1,175 @@
+﻿<script>
+    const edit_order = {
+                     template: `
+<div>
+<jquery-ui-dialog ref="ref_dialog"
+                  v-bind:id="dialog_id"
+                  v-bind:title="action_name + '訂單'"
+                  v-bind:width="760"
+                  v-bind:height="600">
+<template v-slot:content>
+
+    <form autocomplete="off"
+          v-on:submit.prevent="submit_form">
+        <p>
+            <label for="OrderDate">訂單日期</label>
+            <jquery-ui-date-picker
+                v-model="order.OrderDate"
+                v-bind:id="'OrderDate'"
+                v-bind:date_format="'yy-mm-dd'"
+            ></jquery-ui-date-picker>
+        </p>
+        <div>
+            <label>訂單項目</label>
+            <table>
+                <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>金額</th>
+                    <th>
+                        <button type="button"
+                                v-on:click="add_item">
+                            新增
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item, index) in order.Items"
+                    v-bind:key="index">
+                    <td>
+                        <jquery-ui-select-menu
+                            v-model="item.OrderItemId"
+                            v-bind:id="'select-menu-'+index"
+                            v-bind:options="order_items"
+                            v-bind:width=200
+                        ></jquery-ui-select-menu>
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.UnitPrice" />
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.Quantity" />
+                    </td>
+                    <td>
+                        {{ item.Amount }}
+                    </td>
+                    <td>
+                        <button type="button"
+                                v-on:click="del_item(index)">
+                            刪除
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <p>
+                <label>小計：{{ order.SubTotalAmount }}</label>
+            </p>
+            <p>
+                <label>稅金：{{ order.Tax }}</label>
+            </p>
+            <p>
+                <label>總計：{{ order.TotalAmount }}</label>
+            </p>
+
+        </div>
+        <p>
+            <button type="submit">送出</button>
+        </p>
+    </form>
+
+</template>
+</jquery-ui-dialog>
+</div>
+                     `,
+                     props: {
+                         is_edit_mode : Boolean,
+                     },
+
+                     setup(props, { emit }) {
+
+                        const post_url = props.is_edit_mode
+                                           ? '@Url.Action("PostEdit")'
+                                           : '@Url.Action("PostAdd")';
+
+                        const calculate_url = '@Url.Action("Calculate")';
+
+                        const order = ref(@(Html.Raw(ViewBag.EmptyOrder)));
+
+                        const empty_order_item = @(Html.Raw(ViewBag.EmptyOrderItemJson));
+                        const order_items = @(Html.Raw(ViewBag.OrderItemsJson));
+
+                        const dialog_id = props.is_edit_mode
+                                          ? 'edit_order_dialog'
+                                          : 'add_order_dialog';
+
+                        const action_name = props.is_edit_mode
+                                            ? '編輯'
+                                            : '新增';
+
+                        const ref_dialog = ref(null);
+
+                        const open = function (edit_order) {
+                            if (edit_order) {
+                                order.value = edit_order;
+                                console.log(order.value, 'order.value');
+                            }
+                            ref_dialog.value.open();
+                        }
+
+                        const add_item = function() {
+                           const cloned_empty_order_item = JSON.parse(JSON.stringify(empty_order_item));
+                           order.value.Items?.push(cloned_empty_order_item);
+                        }
+
+                        const del_item = function(index) {
+                           order.value.Items?.splice(index, 1);
+                           calculate();
+                        }
+
+                        const calculate = function () {
+                           CustomFetch.PostJson(calculate_url, order.value)
+                                      .then(data => order.value = data);
+                        }
+
+                        const submit_form = function() {
+                           CustomFetch.PostJson(post_url, order.value)
+                                      .then(data => {
+                                          order.value = data;
+                                          emit('complete');
+                                          ref_dialog.value.close();
+                                      });
+                        }
+
+                        return {
+                           post_url,
+                           order,
+                           order_items,
+                           dialog_id,
+                           action_name,
+
+                           ref_dialog,
+                           open,
+
+                           calculate,
+                           add_item,
+                           del_item,
+                           submit_form,
+                        }
+                     },
+                 };
+    app.component("edit-order", edit_order);
+</script>

@@ -1,0 +1,179 @@
+﻿@model Project.Models.Day25.ViewModel
+<style>
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<p>Day25/Case01</p>
+
+<div id="app" v-cloak>
+    <form autocomplete="off"
+          v-on:submit.prevent="submit_form">
+        <p>
+            <label for="OrderDate">訂單日期</label>
+            <input type="date"
+                   v-model="vue_model.OrderDate"
+                   id="OrderDate" />
+        </p>
+        <div>
+            <label>訂單項目</label>
+            <table>
+                <thead>
+                <tr>
+                    <th>
+                        <label>項目</label>
+                    </th>
+                    <th>
+                        <label>單價</label>
+                    </th>
+                    <th>
+                        <label>數量</label>
+                    </th>
+                    <th>
+                        <label>金額</label>
+                    </th>
+                    <th>
+                        <button type="button"
+                                v-on:click="add_item">
+                            新增
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item, index) in vue_model.Items"
+                    v-bind:key="index">
+                    <td>
+                        <select name="select-menu"
+                                v-bind:item-index="index"
+                                v-model="item.OrderItemId">
+                            <option value="null">請選擇</option>
+                            <option v-for="order_item in order_items"
+                                    v-bind:value="order_item.Value" >
+                              {{ order_item.Text }}
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.UnitPrice" />
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.Quantity" />
+                    </td>
+                    <td>
+                        {{ item.Amount }}
+                    </td>
+                    <td>
+                        <button type="button"
+                                v-on:click="del_item(index)">
+                            刪除
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <p>
+                <label>小計：{{ vue_model.SubTotalAmount }}</label>
+            </p>
+            <p>
+                <label>稅金：{{ vue_model.Tax }}</label>
+            </p>
+            <p>
+                <label>總計：{{ vue_model.TotalAmount }}</label>
+            </p>
+
+        </div>
+        <p>
+            <button type="submit">送出</button>
+        </p>
+    </form>
+    <p>
+        <a v-bind:href="prev_url">回上一層</a>
+    </p>
+</div>
+
+@section Scripts
+{
+    <partial name="_Antiforgery" />
+    <script src="/lib/CustomFetch.js?20210608001"></script>
+    <script>
+      const app = createApp({
+        setup(){
+
+          const post_url = '@Url.Action("PostCase01")';
+          const prev_url = '@Url.Action("Index", "Home")';
+          const calculate_url = '@Url.Action("Calculate")';
+
+          const vue_model = ref(@Html.Raw(Model.ToJson()));
+          const empty_item = @(Html.Raw(ViewBag.EmptyItemJson));
+          const order_items = @(Html.Raw(ViewBag.OrderItemsJson));
+
+          onMounted(() => {
+              $('[name="select-menu"]').selectmenu({
+                  width: 200,
+                  select: function (event, ui) {
+
+                      // 從 item-index 取出 Items 內對應的 Item
+                      const item_index = event.target.attributes.getNamedItem('item-index').value;
+                      const item = vue_model.value.Items[parseInt(item_index)];
+
+                      // 更新其 OrderItemId
+                      item.OrderItemId = parseInt(ui.item.value);
+                  }
+              });
+          })
+
+          const add_item = function() {
+              const cloned_empty_item = JSON.parse(JSON.stringify(empty_item));
+              vue_model.value.Items?.push(cloned_empty_item);
+          }
+
+          const del_item = function(index) {
+              vue_model.value.Items?.splice(index, 1);
+              calculate();
+          }
+
+          const calculate = function () {
+              CustomFetch.PostJson(calculate_url, vue_model.value)
+                         .then(data => update_vue_model(data));
+          }
+
+          const update_vue_model = function (data) {
+              vue_model.value = data;
+              vue_model.value.OrderDate = data?.OrderDate?.split('T')[0];
+          }
+
+          const submit_form = function() {
+              CustomFetch.PostJson(post_url, vue_model.value)
+                         .then(data => update_vue_model(data));
+          }
+
+          return {
+              post_url,
+              prev_url,
+
+              vue_model,
+              order_items,
+
+              calculate,
+              add_item,
+              del_item,
+              submit_form,
+          }
+        }
+      });
+
+      const vm = app.mount('#app');
+    </script>
+}

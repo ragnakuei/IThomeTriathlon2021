@@ -1,0 +1,19 @@
+﻿@model Project.Models.Day14.OrderItem
+@{
+    var itemIndex = ViewData["OrderItemIndex"];
+}
+<tr>
+    @Html.Hidden("Items.index", itemIndex)
+    <td>
+        @Html.TextBox($"Items[{itemIndex}].Name", Model.Name)
+    </td>
+    <td>
+        @Html.TextBox($"Items[{itemIndex}].Quantity", Model.Quantity, new { type = "number", step = 1, min = 0 })
+    </td>
+    <td>
+        <button type="button"
+                onclick="DeleteItem(event)">
+            刪除
+        </button>
+    </td>
+</tr>

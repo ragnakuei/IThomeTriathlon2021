@@ -1,0 +1,44 @@
+﻿@model Project.Models.Day10.ViewModel02
+<p>Day10/Case02</p>
+
+<form asp-action="Case02"
+      autocomplete="off"
+      method="post">
+    <p>
+        <label asp-for="Id"></label>
+        <input type="number"
+               step="1"
+               min="0"
+               asp-for="Id" />
+    </p>
+    <p>
+        <label asp-for="Name"></label>
+        <input type="text"
+               asp-for="Name" />
+    </p>
+    <div>
+        <label asp-for="Address"></label>
+        <p>
+            <label asp-for="Address.City"></label>
+            <input type="text"
+                   asp-for="Address.City" />
+        </p>
+        <p>
+            <label asp-for="Address.TownShip"></label>
+            <input type="text"
+                   asp-for="Address.TownShip" />
+        </p>
+        <p>
+            <label asp-for="Address.Detail"></label>
+            <input type="text"
+                   asp-for="Address.Detail" />
+        </p>
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p>
+    <a asp-action="Index">回上一層</a>
+</p>

@@ -1,0 +1,171 @@
+﻿@model Project.Models.Day23.ViewModel
+<style>
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<p>Day23/Case01</p>
+
+<div id="app" v-cloak>
+    <form autocomplete="off"
+          v-on:submit.prevent="submit_form">
+        <p>
+            <label for="OrderDate">訂單日期</label>
+            <input type="date"
+                   v-model="vue_model.OrderDate"
+                   id="OrderDate" />
+        </p>
+        <div>
+            <label>訂單項目</label>
+            <table>
+                <thead>
+                <tr>
+                    <th>
+                        <label>名稱</label>
+                    </th>
+                    <th>
+                        <label>單價</label>
+                    </th>
+                    <th>
+                        <label>數量</label>
+                    </th>
+                    <th>
+                        <label>金額</label>
+                    </th>
+                    <th>
+                        <button type="button"
+                                v-on:click="add_item">
+                            新增
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item, index) in vue_model.Items"
+                    v-bind:key="index">
+                    <td>
+                        <input type="text"
+                               v-model="item.Name" />
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.UnitPrice" />
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               v-on:blur="calculate()"
+                               v-model="item.Quantity" />
+                    </td>
+                    <td>
+                        {{ item.Amount }}
+                    </td>
+                    <td>
+                        <button type="button"
+                                v-on:click="del_item(index)">
+                            刪除
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <p>
+                <label>小計：{{ vue_model.SubTotalAmount }}</label>
+            </p>
+            <p>
+                <label>稅金：{{ vue_model.Tax }}</label>
+            </p>
+            <p>
+                <label>總計：{{ vue_model.TotalAmount }}</label>
+            </p>
+
+        </div>
+        <p>
+            <button type="submit">送出</button>
+        </p>
+    </form>
+    <p>
+        <a v-bind:href="prev_url">回上一層</a>
+    </p>
+</div>
+
+@section Scripts
+{
+    <partial name="_Antiforgery" />
+    <script>
+      const app = createApp({
+        setup(){
+
+          const post_url = '@Url.Action("PostCase01")';
+          const prev_url = '@Url.Action("Index", "Home")';
+          const calculate_url = '@Url.Action("Calculate")';
+
+          const vue_model = ref(@Html.Raw(Model.ToJson()));
+          const empty_item = @(Html.Raw(ViewBag.EmptyItemJson));
+
+          const add_item = function() {
+              const cloned_empty_item = JSON.parse(JSON.stringify(empty_item));
+              vue_model.value.Items?.push(cloned_empty_item);
+          }
+
+          const del_item = function(index) {
+              vue_model.value.Items?.splice(index, 1);
+              calculate();
+          }
+
+          const calculate = function () {
+
+              fetch(calculate_url, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': Antiforgery.RequestVerificationToken
+                  },
+                  body: JSON.stringify(vue_model.value),
+                })
+              .then(response => response.json())
+              .then(data => update_vue_model(data))
+          }
+
+          const update_vue_model = function (data) {
+              vue_model.value = data;
+              vue_model.value.OrderDate = data?.OrderDate?.split('T')[0];
+          }
+
+          const submit_form = function() {
+            fetch(post_url, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'RequestVerificationToken' : Antiforgery.RequestVerificationToken
+                },
+                body: JSON.stringify(vue_model.value),
+              })
+            .then(response => response.json())
+            .then(data => update_vue_model(data));
+          }
+
+          return {
+              post_url,
+              prev_url,
+
+              vue_model,
+
+              calculate,
+              add_item,
+              del_item,
+              submit_form,
+          }
+        }
+      });
+
+      const vm = app.mount('#app');
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿<p>Day03/Case02</p>
+
+<form action="/Day03/Case02"
+      method="post">
+    <p>
+        <label>編號：</label>
+        <input type="number"
+               step="1"
+               min="0"
+               name="id">
+    </p>
+    <p>
+        <label>姓名：</label>
+        <input type="text"
+               name="name">
+    </p>
+    <div>
+        <p>地址</p>
+
+        <p>
+            <label>縣市：</label>
+            <input type="text"
+                   name="address.city">
+        </p>
+        <p>
+            <label>鄉鎮：</label>
+            <input type="text"
+                   name="address.township">
+        </p>
+        <p>
+            <label>詳細地址：</label>
+            <input type="text"
+                   name="address.detail">
+        </p>
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p><a asp-action="Index" >回上一層</a></p>

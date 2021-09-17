@@ -1,0 +1,90 @@
+﻿@model Project.Models.Day29.ViewModel
+<style>
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<p>Day29/Case01</p>
+
+<div id="app"
+     v-cloak>
+    <p>
+        <button type="button"
+                v-on:click="dialog.open()">開啟 Dialog</button>
+    </p>
+    <jquery-ui-dialog ref="dialog"
+                      v-bind:id="'dialog'"
+                      v-bind:title="'表單範例'"
+                      v-bind:width="300"
+                      v-bind:height="210" >
+        <template v-slot:content>
+            <form autocomplete="off"
+                  v-on:submit.prevent="submit_form">
+                <p>
+                    <label>編號：</label>
+                    <input type="number"
+                           step="1"
+                           min="0"
+                           v-model="vue_model.Id">
+                </p>
+                <p>
+                    <label>姓名：</label>
+                    <input type="text"
+                           v-model="vue_model.Name">
+                </p>
+                <p>
+                    <button type="submit">送出</button>
+                </p>
+            </form>
+        </template>
+    </jquery-ui-dialog>
+    <p>
+        <a v-bind:href="prev_url">回上一層</a>
+    </p>
+</div>
+
+@section Scripts
+{
+    <partial name="_Antiforgery" />
+    <script src="/lib/CustomFetch.js?20210608001"></script>
+    <script>
+        const app = createApp({
+        setup: function (){
+
+            const post_url = '@Url.Action("PostCase01")';
+            const prev_url = '@Url.Action("Index", "Home")';
+
+            const vue_model = ref(@Html.Raw(Model.ToJson()));
+
+            const dialog = ref(null);
+
+            const submit_form = function() {
+                CustomFetch.PostJson(post_url, vue_model.value)
+                            .then(data =>
+                            {
+                                vue_model.value = data;
+                                dialog.value.close();
+                            });
+            }
+
+            return {
+                post_url,
+                prev_url,
+
+                vue_model,
+                dialog,
+
+                submit_form,
+            }
+        }
+        });
+    </script>
+    <link rel="stylesheet" href="/lib/jquery-ui-dialog.css?20210611001">
+    <script src="/lib/jquery-ui-dialog.js?20210611001"></script>
+    <script>
+        app.component("jquery-ui-dialog", jquery_ui_dialog);
+
+        const vm = app.mount('#app');
+    </script>
+}

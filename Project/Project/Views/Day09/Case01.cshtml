@@ -1,0 +1,41 @@
+﻿@using Project.Models.Day09
+@model ViewModel
+<p>Day09/Case01</p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        @Html.LabelFor(model => model.OrderDate)
+        @Html.EditorFor(m => m.OrderDate)
+    </p>
+    <div>
+        @Html.LabelFor(model => model.Items)
+        <table>
+            <thead>
+            <tr>
+                <th>@Html.LabelFor(m => m.Items.FirstOrDefault().Name)</th>
+                <th>@Html.LabelFor(m => m.Items.FirstOrDefault().Quantity)</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < Model.Items?.Length; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(m => Model.Items[i].Name)
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => Model.Items[i].Quantity,  new { type = "number", step = 1, min = 0 })
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+}
+
+<p><a asp-action="Index" >回上一層</a></p>

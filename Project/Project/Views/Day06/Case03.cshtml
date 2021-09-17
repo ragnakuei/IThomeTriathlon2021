@@ -1,0 +1,74 @@
+﻿<p>Day06/Case01</p>
+
+<form action="/Day06/Case01"
+      method="post">
+    <p>
+        <label>訂單日期：</label>
+        <input type="date"
+               name="OrderDate">
+    </p>
+    <div>
+        <p>訂單項目</p>
+        <table>
+            <thead>
+            <tr>
+                <th>項目</th>
+                <th>數量</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <input type="hidden"
+                       name="Items.index"
+                       value="0">
+                <td>
+                    <input type="text"
+                           name="Items[0].Name">
+                </td>
+                <td>
+                    <input type="number"
+                           step="1"
+                           min="0"
+                           name="Items[0].Quantity">
+                </td>
+            </tr>
+            <tr>
+                <input type="hidden"
+                       name="Items.index"
+                       value="1">
+                <td>
+                    <input type="text"
+                           name="Items[1].Name">
+                </td>
+                <td>
+                    <input type="number"
+                           step="1"
+                           min="0"
+                           name="Items[1].Quantity">
+                </td>
+            </tr>
+            <tr>
+                <input type="hidden"
+                       name="Items.index"
+                       value="3">
+                <td>
+                    <input type="text"
+                           name="Items[3].Name">
+                </td>
+                <td>
+                    <input type="number"
+                           step="1"
+                           min="0"
+                           name="Items[3].Quantity">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p><a asp-action="Index" >回上一層</a></p>

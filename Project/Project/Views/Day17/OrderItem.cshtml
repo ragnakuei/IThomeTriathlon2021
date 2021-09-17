@@ -1,0 +1,43 @@
+﻿@model Project.Models.Day17.OrderItem
+@{
+    var itemIndex = ViewData["OrderItemIndex"];
+}
+<tr>
+    <input type="hidden"
+           name="Items.index"
+           value="@(itemIndex)">
+    <td>
+        <input type="text"
+               name="Items[@(itemIndex)].Name"
+               asp-for="Name" />
+    </td>
+    <td>
+        <input type="number"
+               name="Items[@(itemIndex)].UnitPrice"
+               step=1
+               min=0
+               onblur="Calculate()"
+               asp-for="UnitPrice" />
+    </td>
+    <td>
+        <input type="number"
+               name="Items[@(itemIndex)].Quantity"
+               step=1
+               min=0
+               onblur="Calculate()"
+               asp-for="Quantity" />
+    </td>
+    <td>
+        <label>@(Model?.Amount)</label>
+        <input type="hidden"
+               readonly
+               name="Items[@(itemIndex)].Amount"
+               asp-for="Amount" />
+    </td>
+    <td>
+        <button type="button"
+                onclick="DeleteItem(event)">
+            刪除
+        </button>
+    </td>
+</tr>

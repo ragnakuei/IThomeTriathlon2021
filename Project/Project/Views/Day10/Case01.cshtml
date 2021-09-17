@@ -1,0 +1,22 @@
+﻿@model Project.Models.Day10.ViewModel
+<p>Day10/Case01</p>
+
+<form asp-action="Case01" method="post">
+    <p>
+        <label asp-for="Id"></label>
+        <input type="number"
+               step="1"
+               min="0"
+               asp-for="Id" />
+    </p>
+    <p>
+        <label asp-for="Name"></label>
+        <input type="text"
+               asp-for="Name" />
+    </p>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p><a asp-action="Index" >回上一層</a></p>

@@ -1,0 +1,92 @@
+﻿@using System.Linq
+@model Project.Models.Day16.ViewModel
+<p>Day16/Case01</p>
+
+<form asp-action="Case01"
+      autocomplete="off"
+      method="post">
+    <p>
+        <label asp-for="OrderDate"></label>
+        <input type="date"
+               asp-for="OrderDate" />
+    </p>
+    <div>
+        <label asp-for="Items"></label>
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    <label asp-for="Items.FirstOrDefault().Name"></label>
+                </th>
+                <th>
+                    <label asp-for="Items.FirstOrDefault().Quantity"></label>
+                </th>
+                <th>
+                    <button type="button"
+                            onclick="AddItem()">
+                        新增
+                    </button>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="Items">
+                @for (int i = 0; i < Model?.Items?.Length; i++)
+                {
+                    ViewData["OrderItemIndex"] = i;
+
+                    <partial name="OrderItem"
+                             for="Items[i]"
+                             view-data="ViewData" />
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p>
+    <a asp-action="Index" asp-controller="Home">回上一層</a>
+</p>
+
+@section Scripts
+{
+    <script>
+
+        window.ItemsCount = @(Model?.Items?.Length ?? 0);
+
+        window.AddItemUrl = '@Url.Action("AddOrderItem")';
+
+        window.AntiForgeryToken = document.querySelectorAll('input[name="__RequestVerificationToken"]')[0].value;
+
+        window.AddItem = function () {
+
+            const requestBody = new URLSearchParams();
+            requestBody.append('index', ItemsCount);
+
+            fetch(AddItemUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'RequestVerificationToken': AntiForgeryToken,
+                },
+                body: requestBody,
+              })
+            .then(response => response.text())
+            .then(data => {
+                $('#Items').append(data);
+                ItemsCount++;
+            })
+        }
+
+        window.DeleteItem = function (e) {
+            const btnDom = e.target;
+
+            const trDom = $(btnDom).parent().parent();
+
+            trDom.remove();
+        }
+    </script>
+}

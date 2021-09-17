@@ -1,0 +1,104 @@
+﻿@using System.Linq
+@model Project.Models.Day13.ViewModel
+<p>Day13/Case02</p>
+
+<form asp-action="Case02"
+      autocomplete="off"
+      method="post">
+    <p>
+        <label asp-for="OrderDate"></label>
+        <input type="date"
+               asp-for="OrderDate" />
+    </p>
+    <div>
+        <label asp-for="Items"></label>
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    <label asp-for="Items.FirstOrDefault().Name"></label>
+                </th>
+                <th>
+                    <label asp-for="Items.FirstOrDefault().Quantity"></label>
+                </th>
+                <th>
+                    <button type="button" onclick="AddItem()" >新增</button>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="Items">
+            @for (int i = 0; i < Model?.Items?.Length; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="text"
+                               asp-for="Items[i].Name" />
+                    </td>
+                    <td>
+                        <input type="number"
+                               step=1
+                               min=0
+                               asp-for="Items[i].Quantity" />
+                    </td>
+                    <td>
+                        <button type="button"
+                                onclick="DeleteItem(event)">
+                            刪除
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+</form>
+
+<p>
+    <a asp-action="Index">回上一層</a>
+</p>
+
+@section Scripts
+{
+    <script>
+
+        window.ItemsCount = @(Model?.Items?.Length ?? 0);
+
+        window.ItemHtml = `
+    <tr>
+        <td>
+            <input type="text"
+                   name="Items[i].Name" />
+        </td>
+        <td>
+            <input type="number"
+                   step=1
+                   min=0
+                   name="Items[i].Quantity" />
+        </td>
+        <td>
+            <button type="button" onclick="DeleteItem(event)" >刪除</button>
+        </td>
+    </tr>
+        `;
+
+        window.AddItem = function () {
+            const itemHtml = ItemHtml.replaceAll('[i]', `[${ItemsCount}]`);
+
+            ItemsCount++;
+
+            $('#Items').append(itemHtml);
+        }
+
+        window.DeleteItem = function (e) {
+            const btnDom = e.target;
+
+            const trDom = $(btnDom).parent().parent();
+
+            trDom.remove();
+        }
+    </script>
+}

@@ -1,0 +1,34 @@
+﻿@model Project.Models.Day07.ViewModel02
+<p>Day07/Case02</p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        @Html.LabelFor(model => model.Id)
+        @Html.TextBoxFor(m => m.Id, new { type = "number", step = 1, min = 0 })
+    </p>
+    <p>
+        @Html.LabelFor(model => model.Name)
+        @Html.TextBoxFor(m => m.Name)
+    </p>
+    <div>
+        @Html.LabelFor(model => model.Address)
+        <p>
+            @Html.LabelFor(model => model.Address.City)
+            @Html.TextBoxFor(m => m.Address.City)
+        </p>
+        <p>
+            @Html.LabelFor(model => model.Address.TownShip)
+            @Html.TextBoxFor(m => m.Address.TownShip)
+        </p>
+        <p>
+            @Html.LabelFor(model => model.Address.Detail)
+            @Html.TextBoxFor(m => m.Address.Detail)
+        </p>
+    </div>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+}
+
+<p><a asp-action="Index" >回上一層</a></p>

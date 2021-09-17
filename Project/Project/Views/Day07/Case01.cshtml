@@ -1,0 +1,19 @@
+﻿@model Project.Models.Day07.ViewModel
+<p>Day07/Case01</p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        @Html.LabelFor(model => model.Id)
+        @Html.TextBoxFor(m => m.Id, new { type = "number", step = 1, min = 0 })
+    </p>
+    <p>
+        @Html.LabelFor(model => model.Name)
+        @Html.TextBoxFor(m => m.Name)
+    </p>
+    <p>
+        <button type="submit">送出</button>
+    </p>
+}
+
+<p><a asp-action="Index" >回上一層</a></p>

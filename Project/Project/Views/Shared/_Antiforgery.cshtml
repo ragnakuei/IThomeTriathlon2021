@@ -1,0 +1,12 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    private string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+<script>
+    window.Antiforgery = {};
+    Antiforgery.RequestVerificationToken = '@(GetAntiXsrfRequestToken())';
+</script>

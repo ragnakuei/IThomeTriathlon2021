@@ -1,0 +1,131 @@
+﻿<style>
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<p>Day30/Case01</p>
+
+<div id="app"
+     v-cloak>
+
+    <p>列表</p>
+    <table>
+        <thead>
+        <tr>
+            <th>訂單編號</th>
+            <th>訂單日期</th>
+            <th>總計</th>
+            <th>
+                <input type="button"
+                       v-on:click="ref_add_order.open()"
+                       value="新增" />
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for=" (order, order_index) in orders "
+            v-bind:key="order.OrderId">
+            <td>{{ order.OrderId }}</td>
+            <td>{{ order.OrderDate.split('T')[0] }}</td>
+            <td>{{ order.TotalAmount }}</td>
+            <td>
+                <input type="button"
+                       v-on:click="open_edit_dialog(order.OrderId)"
+                       value="編輯" />
+                <input type="button"
+                       v-on:click="confirm_delete(order)"
+                       value="刪除" />
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <edit-order ref="ref_add_order"
+                v-bind:is_edit_mode=false
+                v-on:complete="refresh_orders()"></edit-order>
+    <edit-order ref="ref_edit_order"
+                v-bind:is_edit_mode=true
+                v-on:complete="refresh_orders()"></edit-order>
+
+    <p>
+        <a v-bind:href="prev_url">回上一層</a>
+    </p>
+</div>
+
+@section Scripts
+{
+    <partial name="_Antiforgery" />
+    <script src="/lib/CustomFetch.js?20210608001"></script>
+    <script>
+        const app = createApp({
+            setup: function (){
+
+                const get_orders_url = '@Url.Action("GetList")';
+                const get_order_url = '@Url.Action("Get")';
+                const delete_order_url = '@Url.Action("PostDelete")';
+                const prev_url = '@Url.Action("Index", "Home")';
+
+                const orders = ref(@Html.Raw(ViewBag.OrdersJson));
+
+                const ref_add_order = ref(null);
+                const ref_edit_order = ref(null);
+
+                const refresh_orders = function() {
+                    CustomFetch.PostJson(get_orders_url)
+                                .then(data =>
+                                {
+                                    orders.value = data;
+                                });
+                }
+
+                const open_edit_dialog = function(order_id) {
+                    CustomFetch.PostJson(get_order_url, order_id)
+                                .then(function (data)
+                                {
+                                    ref_edit_order.value.open(data);
+                                });
+                }
+
+                const confirm_delete = function(order) {
+                    const deleteConfirmResult = confirm("是否刪除訂單:" + order.OrderId  + " ?");
+
+                    if(deleteConfirmResult)
+                    {
+                        CustomFetch.PostJson(delete_order_url, order.OrderId)
+                                   .then(function (data)
+                                   {
+                                       refresh_orders();
+                                   });
+                    }
+                }
+
+                return {
+                    prev_url,
+
+                    orders,
+
+                    ref_add_order,
+                    ref_edit_order,
+
+                    refresh_orders,
+                    open_edit_dialog,
+                    confirm_delete,
+                }
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="/lib/jquery-ui-dialog.css?20210611001">
+    <script src="/lib/jquery-ui-dialog.js?20210611001"></script>
+    <script src="/lib/jquery-ui-select-menu.js?20210608001"></script>
+    <script src="/lib/jquery-ui-date-picker.js?20210608001"></script>
+    <script>
+        app.component("jquery-ui-select-menu", jquery_ui_select_menu);
+        app.component("jquery-ui-date-picker", jquery_ui_date_picker);
+        app.component("jquery-ui-dialog",      jquery_ui_dialog);
+    </script>
+    <partial name="_EditOrder"/>
+    <script>
+        const vm = app.mount('#app');
+    </script>
+}
