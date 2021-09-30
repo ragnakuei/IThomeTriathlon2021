@@ -2,97 +2,95 @@
     const edit_order = {
                      template: `
 <div>
-<jquery-ui-dialog ref="ref_dialog"
-                  v-bind:id="dialog_id"
-                  v-bind:title="action_name + '訂單'"
-                  v-bind:width="760"
-                  v-bind:height="600">
-<template v-slot:content>
+    <jquery-ui-dialog ref="ref_dialog"
+                      v-bind:id="dialog_id"
+                      v-bind:title="action_name + '訂單'"
+                      v-bind:width="760"
+                      v-bind:height="600">
+        <template v-slot:content>
 
-    <form autocomplete="off"
-          v-on:submit.prevent="submit_form">
-        <p>
-            <label for="OrderDate">訂單日期</label>
-            <jquery-ui-date-picker
-                v-model="order.OrderDate"
-                v-bind:id="'OrderDate'"
-                v-bind:date_format="'yy-mm-dd'"
-            ></jquery-ui-date-picker>
-        </p>
-        <div>
-            <label>訂單項目</label>
-            <table>
-                <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>單價</th>
-                    <th>數量</th>
-                    <th>金額</th>
-                    <th>
-                        <button type="button"
-                                v-on:click="add_item">
-                            新增
-                        </button>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(item, index) in order.Items"
-                    v-bind:key="index">
-                    <td>
-                        <jquery-ui-select-menu
-                            v-model="item.OrderItemId"
-                            v-bind:id="'select-menu-'+index"
-                            v-bind:options="order_items"
-                            v-bind:width=200
-                        ></jquery-ui-select-menu>
-                    </td>
-                    <td>
-                        <input type="number"
-                               step=1
-                               min=0
-                               v-on:blur="calculate()"
-                               v-model="item.UnitPrice" />
-                    </td>
-                    <td>
-                        <input type="number"
-                               step=1
-                               min=0
-                               v-on:blur="calculate()"
-                               v-model="item.Quantity" />
-                    </td>
-                    <td>
-                        {{ item.Amount }}
-                    </td>
-                    <td>
-                        <button type="button"
-                                v-on:click="del_item(index)">
-                            刪除
-                        </button>
-                    </td>
-                </tr>
+            <form autocomplete="off"
+                  v-on:submit.prevent="submit_form">
+                <p>
+                    <label for="OrderDate">訂單日期</label>
+                    <jquery-ui-date-picker v-model="order.OrderDate"
+                                           v-bind:id="'OrderDate'"
+                                           v-bind:date_format="'yy-mm-dd'">
+                    </jquery-ui-date-picker>
+                </p>
+                <div>
+                    <label>訂單項目</label>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>單價</th>
+                            <th>數量</th>
+                            <th>金額</th>
+                            <th>
+                                <button type="button"
+                                        v-on:click="add_item">
+                                    新增
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item, index) in order.Items"
+                            v-bind:key="index">
+                            <td>
+                                <jquery-ui-select-menu v-model="item.OrderItemId"
+                                                       v-bind:id="'select-menu-'+index"
+                                                       v-bind:options="order_items"
+                                                       v-bind:width=200>
+                                </jquery-ui-select-menu>
+                            </td>
+                            <td>
+                                <input type="number"
+                                       step=1
+                                       min=0
+                                       v-on:blur="calculate()"
+                                       v-model="item.UnitPrice" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       step=1
+                                       min=0
+                                       v-on:blur="calculate()"
+                                       v-model="item.Quantity" />
+                            </td>
+                            <td>
+                                {{ item.Amount }}
+                            </td>
+                            <td>
+                                <button type="button"
+                                        v-on:click="del_item(index)">
+                                    刪除
+                                </button>
+                            </td>
+                        </tr>
 
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
 
-            <p>
-                <label>小計：{{ order.SubTotalAmount }}</label>
-            </p>
-            <p>
-                <label>稅金：{{ order.Tax }}</label>
-            </p>
-            <p>
-                <label>總計：{{ order.TotalAmount }}</label>
-            </p>
+                    <p>
+                        <label>小計：{{ order.SubTotalAmount }}</label>
+                    </p>
+                    <p>
+                        <label>稅金：{{ order.Tax }}</label>
+                    </p>
+                    <p>
+                        <label>總計：{{ order.TotalAmount }}</label>
+                    </p>
 
-        </div>
-        <p>
-            <button type="submit">送出</button>
-        </p>
-    </form>
+                </div>
+                <p>
+                    <button type="submit">送出</button>
+                </p>
+            </form>
 
-</template>
-</jquery-ui-dialog>
+        </template>
+    </jquery-ui-dialog>
 </div>
                      `,
                      props: {

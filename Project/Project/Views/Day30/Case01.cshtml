@@ -43,11 +43,12 @@
 
     <edit-order ref="ref_add_order"
                 v-bind:is_edit_mode=false
-                v-on:complete="refresh_orders()"></edit-order>
+                v-on:complete="refresh_orders()">
+    </edit-order>
     <edit-order ref="ref_edit_order"
                 v-bind:is_edit_mode=true
-                v-on:complete="refresh_orders()"></edit-order>
-
+                v-on:complete="refresh_orders()">
+    </edit-order>
     <p>
         <a v-bind:href="prev_url">回上一層</a>
     </p>
